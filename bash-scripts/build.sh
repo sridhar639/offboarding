@@ -29,7 +29,25 @@ assume_role() {
   aws sts get-caller-identity --no-cli-pager --output table
 }
 
+#Check current stack Progress
+monitor_stack() {
+  local stack_name=$1
 
+  while :
+  do
+     cf_status=$(aws cloudformation describe-stacks --stack-name "$stack_name" --query "Stacks[0].StackStatus" --output text)
+     echo "$stack_name status: $cf_status"
+     if [[ $cf_status == "DELETE_COMPLETE" ]]; then
+        echo "Successfully Deleted $stack_name"
+     elif [[ $cf_status == "DELETE_IN_PROGRESS" ]]; then
+        sleep 10
+     elif [[ $cf_status == "ROLLBACK_IN_PROGRESS" || $cf_status == "ROLLBACK_COMPLETE" ]]; then
+        END_TS=$(date "+ %d/%m/%Y:%H:%M:%S")
+        error_message=$(get_stack_failure_reason "$stack_name")
+        echo "$error_messages"
+     fi
+  done
+}
 
 
 delete_cdw_resources() {
@@ -39,6 +57,7 @@ delete_cdw_resources() {
     for stack in "${stack_list[@]}"; do
         echo "Deleting stack: $stack"
         aws cloudformation delete-stack --stack-name "$stack"
+        monitor_stack "$stack"
     done
 
     assume_role "bluemoon"
