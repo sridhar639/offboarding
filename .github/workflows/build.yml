@@ -1,0 +1,36 @@
+name: Build and Deploy
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+      - test
+
+jobs:
+  dv-managed-svcs-aws-onboarding-build:
+    if: github.event.pull_request.merged == true
+    runs-on: sri-offboarding-test-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pip install -r requirements/requirements.txt
+
+      - name: Gather Variables and Git details
+        run: |
+          bash bash-scripts/get-git-details.sh
+          bash bash-scripts/get-variables.sh
+          
+
+      - name: Build
+        run: bash bash-scripts/build.sh
+
+      - name: Post-validation
+        run: |
+          sleep 10
+          bash bash-scripts/post-validation.sh
+
+      - name: Post-build
+        run: echo "Build completed on $(date)"

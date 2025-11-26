@@ -1,0 +1,47 @@
+#
+# OctoKitty GitHub Repo settings file
+# - This file is used to set repo configuration settings for newly created repos
+# - Repo creation date: 2025-09-08
+# - Repo created by:    pravval
+# - Repo template:      repos/all/octokitty_settings_default.yml
+#
+---
+#
+# Repository Settings
+# See https://docs.github.com/en/rest/reference/repos#update-a-repository for all available settings.
+#
+# - name: the name of the repository; changing this will rename the repository
+# - description: a short description of the repository that will show up on GitHub
+# - topics: a comma-separated list of topics to set on the repository
+# - homepage: a URL with more information about the repository
+# - allow_merge_commit: either `true` to allow merging pull requests with a merge commit, or `false` to prevent merging pull requests with merge commits
+# - allow_rebase_merge: either `true` to allow rebase-merging pull requests, or `false` to prevent rebase-merging
+# - allow_squash_merge: either `true` to allow squash-merging pull requests, or `false` to prevent squash-merging
+# - default_branch: sets the default branch for this repository
+# - delete_branch_on_merge: either `true` to enable automatic deletion of branches on merge, or `false` to disable
+# - enable_automated_security_fixes: either `true` to enable automated security fixes, or `false` to disable automated security fixes
+# - enable_vulnerability_alerts: either `true` to enable vulnerability alerts, or `false` to disable vulnerability alerts
+# - has_downloads: either `true` to enable downloads for this repository, `false` to disable them
+# - has_issues: either `true` to enable issues for this repository, `false` to disable them
+# - has_projects: either `true` to enable projects for this repository, or `false` to disable them
+# - has_wiki: either `true` to enable the wiki for this repository, `false` to disable it
+# - private: either `true` to make the repository private, or `false` to make it public
+#
+repository:
+  name: offboarding
+  description: This repository is used for offboarding AWS customers.
+  topics: python,bash
+  homepage: 
+  allow_merge_commit: true
+  allow_rebase_merge: true
+  allow_squash_merge: true
+  default_branch: main
+  delete_branch_on_merge: false
+  enable_automated_security_fixes: false
+  enable_vulnerability_alerts: false
+  has_downloads: true 
+  has_issues: true
+  has_projects: true
+  has_wiki: true
+  private: true
+

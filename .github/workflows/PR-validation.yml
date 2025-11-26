@@ -1,0 +1,31 @@
+name: Pre-validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+      - test
+
+jobs:
+  dv-managed-svcs-aws-onboarding-pr-validation:
+    runs-on: sri-offboarding-test-${{ github.run_id }}-${{ github.run_attempt }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements/requirements.txt
+
+      - name: Gather Variables and git details
+        run: |
+          bash bash-scripts/get-git-details.sh
+          bash bash-scripts/get-variables.sh
+          
+
+      - name: Pre-validation
+        run: |
+          bash bash-scripts/pre-validation.sh
+
