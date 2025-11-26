@@ -64,6 +64,11 @@ assume_role "bluemoon"
 }
 
 
+
+account_no="112393354275"
+list
+
+
 #Exporting all the values
 cat <<EOL >> /tmp/build_vars.sh
 export lambda_list=(${lambda_list[@]@Q})
@@ -79,8 +84,4 @@ echo -e "\nWrote Everything to /tmp/build_vars.sh"
 echo "================ File Contents ================"
 cat /tmp/build_vars.sh
 echo "==============================================="
-
-
-account_no="112393354275"
-list
 
