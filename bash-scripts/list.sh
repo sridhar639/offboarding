@@ -54,3 +54,5 @@ echo "============================= S3 Buckets =================================
 aws s3api list-buckets --query "Buckets[].Name" --output text | tr '\t' '\n' | grep -i "$SEARCH"
 
 }
+
+list
