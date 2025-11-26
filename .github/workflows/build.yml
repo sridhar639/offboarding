@@ -10,7 +10,7 @@ on:
 jobs:
   sri-test-build:
     if: github.event.pull_request.merged == true
-    runs-on: sri-offboarding-test-${{ github.run_id }}-${{ github.run_attempt }}
+    runs-on: codebuild-sri-offboarding-test-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
