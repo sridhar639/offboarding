@@ -32,74 +32,52 @@ SEARCH="cdw"
 assume_role "112393354275" "CDWOffboardingRole"
 
 echo "============================= Lambda Functions ==================================================="
-aws lambda list-functions --query "Functions[].FunctionName" --output text | tr '\t' '\n' | grep -i "$SEARCH"
+lambda_list=($(aws lambda list-functions --query "Functions[].FunctionName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+printf "%s\n" "${lambda_list[@]}"
 
 echo "============================= CloudFormation Stacks ==================================================="
-aws cloudformation list-stacks \
+stack_list=($(aws cloudformation list-stacks \
   --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE \
-  --query "StackSummaries[].StackName" --output text | tr '\t' '\n' | grep -i "$SEARCH"
+  --query "StackSummaries[].StackName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+printf "%s\n" "${stack_list[@]}"
 
 echo "============================= CloudFormation StackSets ==================================================="
-aws cloudformation list-stack-sets --status ACTIVE \
-  --query "Summaries[].StackSetName" --output text | tr '\t' '\n' | grep -i "$SEARCH"
+stackset_list=($(aws cloudformation list-stack-sets --status ACTIVE \
+  --query "Summaries[].StackSetName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+printf "%s\n" "${stackset_list[@]}"
 
 echo "============================= IAM Roles ==================================================="
-aws iam list-roles --query "Roles[].RoleName" --output text | tr '\t' '\n' | grep -i "$SEARCH"
+role_list=($(aws iam list-roles --query "Roles[].RoleName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+printf "%s\n" "${role_list[@]}"
 
 echo "============================= IAM Policies ==================================================="
-aws iam list-policies --scope Local \
-  --query "Policies[].PolicyName" --output text | tr '\t' '\n' | grep -i "$SEARCH"
+iam_policy_list=($(aws iam list-policies --scope Local \
+  --query "Policies[].PolicyName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+printf "%s\n" "${iam_policy_list[@]}"
 
 echo "============================= S3 Buckets ==================================================="
-aws s3api list-buckets --query "Buckets[].Name" --output text | tr '\t' '\n' | grep -i "$SEARCH"
+s3_bucket_list=($(aws s3api list-buckets --query "Buckets[].Name" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+printf "%s\n" "${s3_bucket_list[@]}"
 
 }
 
-
-create_offboarding_role() {
-    assume_role "112393354275" "CDWMasterOrgAdminRole"
-
-    ROLE_NAME="CDWOffboardingRole"
-    MASTER_ACCOUNT="706839808421"
-    POLICY_ARN="arn:aws:iam::aws:policy/AdministratorAccess"
-
-    # Trust policy as variable (HEREDOC must NOT be indented)
-    TRUST_POLICY=$(cat <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "",
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::${MASTER_ACCOUNT}:root"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-EOF
-)
-
-    echo "Creating IAM Role: $ROLE_NAME"
-
-    aws iam create-role \
-        --role-name "$ROLE_NAME" \
-        --assume-role-policy-document "$TRUST_POLICY" \
-        --path "/" >/dev/null
-
-    echo "Attaching AdministratorAccess policy..."
-
-    aws iam attach-role-policy \
-        --role-name "$ROLE_NAME" \
-        --policy-arn "$POLICY_ARN" >/dev/null
-
-    echo "Role $ROLE_NAME created successfully with Admin access."
-
-    assume_role "bluemoon"
-}
 
 
 account_no="112393354275"
-create_offboarding_role
 list
+
+#Exporting all the values
+cat <<EOL >> /tmp/build_vars.sh
+export lambda_list=(${lambda_list[@]@Q})
+export lambda_list=(${stack_list[@]@Q})
+export lambda_list=(${stackset_list[@]@Q})
+export lambda_list=(${role_list[@]@Q})
+export lambda_list=(${iam_policy_list[@]@Q})
+export lambda_list=(${s3_bucket_list[@]@Q})
+EOL
+
+
+echo -e "\nWrote Everything to /tmp/build_vars.sh"
+echo "================ File Contents ================"
+cat /tmp/build_vars.sh
+echo "==============================================="

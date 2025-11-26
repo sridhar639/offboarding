@@ -18,6 +18,10 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements/requirements.txt
 
-      - name: Gather Variables and Git details
+      - name: Create offboarding Role
+        run: |
+          bash bash-scripts/create_offboarding_role.sh
+
+      - name: Removing CDW Resources
         run: |
           bash bash-scripts/build.sh
