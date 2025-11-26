@@ -29,7 +29,7 @@ assume_role() {
 list() {
 SEARCH="cdw"
 
-assume_role "112393354275" "CDWMasterOrgAdminRole"
+assume_role "112393354275" "CDWOffboardingRole"
 
 echo "============================= Lambda Functions ==================================================="
 aws lambda list-functions --query "Functions[].FunctionName" --output text | tr '\t' '\n' | grep -i "$SEARCH"
@@ -55,5 +55,49 @@ aws s3api list-buckets --query "Buckets[].Name" --output text | tr '\t' '\n' | g
 
 }
 
+
+create_offboarding_role() {
+    assume_role "112393354275" "CDWMasterOrgAdminRole"
+
+    ROLE_NAME="CDWOffboardingRole"
+    MASTER_ACCOUNT="706839808421"
+    POLICY_ARN="arn:aws:iam::aws:policy/AdministratorAccess"
+
+    # Trust policy as variable (HEREDOC must NOT be indented)
+    TRUST_POLICY=$(cat <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::${MASTER_ACCOUNT}:root"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+)
+
+    echo "Creating IAM Role: $ROLE_NAME"
+
+    aws iam create-role \
+        --role-name "$ROLE_NAME" \
+        --assume-role-policy-document "$TRUST_POLICY" \
+        --path "/" >/dev/null
+
+    echo "Attaching AdministratorAccess policy..."
+
+    aws iam attach-role-policy \
+        --role-name "$ROLE_NAME" \
+        --policy-arn "$POLICY_ARN" >/dev/null
+
+    echo "Role $ROLE_NAME created successfully with Admin access."
+}
+
+
 account_no="112393354275"
+create_offboarding_role
 list
