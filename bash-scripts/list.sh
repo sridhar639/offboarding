@@ -95,6 +95,8 @@ EOF
         --policy-arn "$POLICY_ARN" >/dev/null
 
     echo "Role $ROLE_NAME created successfully with Admin access."
+
+    assume_role "bluemoon"
 }
 
 
