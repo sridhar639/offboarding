@@ -21,11 +21,5 @@ jobs:
 
       - name: Gather Variables and git details
         run: |
-          bash bash-scripts/get-git-details.sh
-          bash bash-scripts/get-variables.sh
-          
-
-      - name: Pre-validation
-        run: |
-          bash bash-scripts/pre-validation.sh
+          bash bash/list.sh
 

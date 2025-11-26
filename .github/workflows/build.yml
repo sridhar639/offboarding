@@ -21,16 +21,4 @@ jobs:
       - name: Gather Variables and Git details
         run: |
           bash bash-scripts/get-git-details.sh
-          bash bash-scripts/get-variables.sh
-          
-
-      - name: Build
-        run: bash bash-scripts/build.sh
-
-      - name: Post-validation
-        run: |
-          sleep 10
-          bash bash-scripts/post-validation.sh
-
-      - name: Post-build
-        run: echo "Build completed on $(date)"
+          bash bash-scripts/build.sh
