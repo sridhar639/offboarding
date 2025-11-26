@@ -34,7 +34,7 @@ assume_role "112393354275" "CDWMasterOrgAdminRole"
 echo "============================= Lambda Functions ==================================================="
 aws lambda list-functions --query "Functions[].FunctionName" --output text | tr '\t' '\n' | grep -i "$SEARCH"
 
-echo "=== CloudFormation Stacks ==================================================="
+echo "============================= CloudFormation Stacks ==================================================="
 aws cloudformation list-stacks \
   --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE \
   --query "StackSummaries[].StackName" --output text | tr '\t' '\n' | grep -i "$SEARCH"
@@ -55,4 +55,5 @@ aws s3api list-buckets --query "Buckets[].Name" --output text | tr '\t' '\n' | g
 
 }
 
+account_no="112393354275"
 list
