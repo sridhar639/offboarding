@@ -59,12 +59,10 @@ echo "============================= S3 Buckets =================================
 s3_bucket_list=($(aws s3api list-buckets --query "Buckets[].Name" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
 printf "%s\n" "${s3_bucket_list[@]}"
 
+assume_role "bluemoon"
+
 }
 
-
-
-account_no="112393354275"
-list
 
 #Exporting all the values
 cat <<EOL >> /tmp/build_vars.sh
@@ -81,3 +79,8 @@ echo -e "\nWrote Everything to /tmp/build_vars.sh"
 echo "================ File Contents ================"
 cat /tmp/build_vars.sh
 echo "==============================================="
+
+
+account_no="112393354275"
+list
+
