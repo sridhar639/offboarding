@@ -1,8 +1,7 @@
 name: Pre-validation
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  push:
     branches:
       - main
       - test
@@ -21,5 +20,5 @@ jobs:
 
       - name: Gather Variables and git details
         run: |
-          bash bash/list.sh
+          bash bash-scripts/list.sh
 
