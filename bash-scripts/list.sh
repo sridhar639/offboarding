@@ -69,11 +69,11 @@ list
 #Exporting all the values
 cat <<EOL >> /tmp/build_vars.sh
 export lambda_list=(${lambda_list[@]@Q})
-export lambda_list=(${stack_list[@]@Q})
-export lambda_list=(${stackset_list[@]@Q})
-export lambda_list=(${role_list[@]@Q})
-export lambda_list=(${iam_policy_list[@]@Q})
-export lambda_list=(${s3_bucket_list[@]@Q})
+export stack_list=(${stack_list[@]@Q})
+export stackset_list=(${stackset_list[@]@Q})
+export role_list=(${role_list[@]@Q})
+export iam_policy_list=(${iam_policy_list[@]@Q})
+export s3_bucket_list=(${s3_bucket_list[@]@Q})
 EOL
 
 

@@ -8,10 +8,12 @@ fi
 
 delete_cdw_resources() {
 
+echo "Deleting Stacks"
 for stack in "${stack_list[@]}"; do
     echo "Deleting stack: $stack"
     aws cloudformation delete-stack --stack-name "$stack"
 done
+
 
 }
 
