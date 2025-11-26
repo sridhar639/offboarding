@@ -14,3 +14,5 @@ for stack in "${stack_list[@]}"; do
 done
 
 }
+
+delete_cdw_resources
