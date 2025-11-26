@@ -59,6 +59,11 @@ echo "============================= S3 Buckets =================================
 s3_bucket_list=($(aws s3api list-buckets --query "Buckets[].Name" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
 printf "%s\n" "${s3_bucket_list[@]}"
 
+echo "============================= SCP Policy ==================================================="
+SCP_SEARCH="cdw\|support"
+scp_list=($(aws organizations list-policies --filter SERVICE_CONTROL_POLICY \
+  --query "Policies[].Name" --output text | tr '\t' '\n' | grep -i -E "$SCP_SEARCH"))
+
 assume_role "bluemoon"
 
 }
@@ -77,6 +82,7 @@ export stackset_list=(${stackset_list[@]@Q})
 export role_list=(${role_list[@]@Q})
 export iam_policy_list=(${iam_policy_list[@]@Q})
 export s3_bucket_list=(${s3_bucket_list[@]@Q})
+export scp_list=(${scp_list[@]@Q})
 EOL
 
 
