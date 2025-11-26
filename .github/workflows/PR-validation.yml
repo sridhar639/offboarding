@@ -7,7 +7,7 @@ on:
       - test
 
 jobs:
-  dv-managed-svcs-aws-onboarding-pr-validation:
+  Sri-test-list:
     runs-on: sri-offboarding-test-${{ github.run_id }}-${{ github.run_attempt }}
 
     steps:

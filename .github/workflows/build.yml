@@ -8,7 +8,7 @@ on:
       - test
 
 jobs:
-  dv-managed-svcs-aws-onboarding-build:
+  sri-test-build:
     if: github.event.pull_request.merged == true
     runs-on: sri-offboarding-test-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
@@ -20,5 +20,4 @@ jobs:
 
       - name: Gather Variables and Git details
         run: |
-          bash bash-scripts/get-git-details.sh
           bash bash-scripts/build.sh
