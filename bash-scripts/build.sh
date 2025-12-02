@@ -32,7 +32,7 @@ assume_role() {
 
 
 delete_stack() {
-    assume_role "112393354275" "CDWOffboardingRole"
+    assume_role "$account_no" "CDWOffboardingRole"
 
     stack_list=($(aws cloudformation list-stacks \
             --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE \
@@ -53,7 +53,7 @@ delete_stack() {
 }
 
 delete_stackset() {
-    assume_role "112393354275" "CDWOffboardingRole"
+    assume_role "$account_no" "CDWOffboardingRole"
 
     stackset_list=($(aws cloudformation list-stack-sets --status ACTIVE \
         --query "Summaries[].StackSetName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
@@ -97,64 +97,70 @@ delete_stackset() {
 }
 
 delete_scp() {
-    assume_role "112393354275" "CDWOffboardingRole"
+    assume_role "$account_no" "CDWOffboardingRole"
 
-    SCP_SEARCH="cdw\|support"
+    SCP_SEARCH="cdw|support"
+
+    # Get list of SCP names matching search
     scp_list=($(aws organizations list-policies --filter SERVICE_CONTROL_POLICY \
-        --query "Policies[].Name" --output text | tr '\t' '\n' | grep -i -E "$SCP_SEARCH"))
+      --query "Policies[].Name" --output text \
+      | tr '\t' '\n' \
+      | grep -Ei "$SCP_SEARCH"))
 
-    echo "=========================================================== deleting SCP ==================================="
-    for scp_name in "${scp_names[@]}"; do
+    echo "Found SCPs:"
+    printf "%s\n" "${scp_list[@]}"
+
+    echo "================= Deleting SCPs ==========================="
+
+    for scp_name in "${scp_list[@]}"; do
         echo "Processing SCP: $scp_name"
 
-        # Get SCP ID from name
-        scp_id=$(aws organizations list-policies --filter SERVICE_CONTROL_POLICY --query "Policies[?Name=='$scp_name'].Id" --output text)
-        echo "$scp_id"
+        # Get SCP ID
+        scp_id=$(aws organizations list-policies --filter SERVICE_CONTROL_POLICY \
+            --query "Policies[?Name=='$scp_name'].Id" \
+            --output text)
 
-        if [ -z "$scp_id" ]; then
+        if [[ -z "$scp_id" || "$scp_id" == "None" ]]; then
             echo "SCP '$scp_name' not found. Skipping."
             continue
         fi
 
         echo "Found SCP ID: $scp_id"
 
-        # Detach from all roots
-        root_ids=$(aws organizations list-roots --query "Roots[].Id" --output text)
-        for root_id in $root_ids; do
-            echo "Detaching from root $root_id"
-            aws organizations detach-policy --policy-id "$scp_id" --target-id "$root_id"
-            sleep 5
+        echo "----- Checking and detaching attachments -----"
+
+        # Get all targets the policy is attached to
+        attached_targets=$(aws organizations list-targets-for-policy \
+            --policy-id "$scp_id" \
+            --query "Targets[].TargetId" \
+            --output text)
+
+        if [[ -z "$attached_targets" ]]; then
+            echo "No attachments found for $scp_name"
+        else
+            echo "Attached targets: $attached_targets"
+        fi
+
+        # Detach only where attached
+        for target in $attached_targets; do
+            echo "Detaching $scp_name from $target"
+            aws organizations detach-policy --policy-id "$scp_id" --target-id "$target"
+            sleep 2
         done
 
-        # Detach from all OUs
-        ou_ids=$(aws organizations list-organizational-units-for-parent --parent-id $root_ids --query "OrganizationalUnits[].Id" --output text)
-        for ou_id in $ou_ids; do
-            echo "Detaching from OU $ou_id"
-            aws organizations detach-policy --policy-id "$scp_id" --target-id "$ou_id"
-            sleep 5
+        echo "----- Deleting SCP: $scp_name ($scp_id) -----"
+        aws organizations delete-policy --policy-id "$scp_id"
+        echo "Deleted: $scp_name"
+        echo "----------------------------------------------------"
+        sleep 3
     done
 
-    # Detach from all accounts
-    account_ids=$(aws organizations list-accounts --query "Accounts[].Id" --output text)
-    for account_id in $account_ids; do
-        echo "Detaching from account $account_id"
-        aws organizations detach-policy --policy-id "$scp_id" --target-id "$account_id"
-        sleep 5
-    done
-
-    # Delete the SCP
-    echo "Deleting SCP $scp_name ($scp_id)"
-    aws organizations delete-policy --policy-id "$scp_id"
-    sleep 5
-    echo "Done with $scp_name"
-    echo "--------------------------------------"
-    done
 
     assume_role "bluemoon"
 }
 
 delete_lambda() {
-    assume_role "112393354275" "CDWOffboardingRole"
+    assume_role "$account_no" "CDWOffboardingRole"
     lambda_list=($(aws lambda list-functions --query "Functions[].FunctionName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
     printf "%s\n" "${lambda_list[@]}"
 
@@ -166,8 +172,11 @@ delete_lambda() {
 }
 
 delete_iam_role() {
-    assume_role "112393354275" "CDWOffboardingRole"
-    role_list=($(aws iam list-roles --query "Roles[].RoleName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+    assume_role "$account_no" "CDWOffboardingRole"
+
+    role_list=($(aws iam list-roles \
+        --query "Roles[].RoleName" \
+        --output text | tr '\t' '\n' | grep -i "$SEARCH" | grep -iv "CDWOffboardingRole"))
     printf "%s\n" "${role_list[@]}"
 
     for role in "${role_list[@]}"; do
@@ -204,6 +213,8 @@ delete_iam_role() {
 }
 
 delete_iam_policy() {
+    assume_role "$account_no" "CDWOffboardingRole"
+
     iam_policy_list=($(aws iam list-policies --scope Local \
       --query "Policies[].PolicyName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
     printf "%s\n" "${iam_policy_list[@]}"
@@ -239,10 +250,60 @@ delete_iam_policy() {
         aws iam delete-policy --policy-arn "$policy_arn"
 
         echo "Deleted $policy_name"
-        echo
+    done
+
+    assume_role "bluemoon"
 }
 
+delete_s3_bucket() {
+    assume_role "$account_no" "CDWOffboardingRole"
 
+    # Get buckets containing SEARCH
+    s3_bucket_list=($(aws s3api list-buckets \
+        --query "Buckets[].Name"
+         --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+
+    echo "Buckets to delete:"
+    printf "%s\n" "${s3_bucket_list[@]}"
+
+    for bucket in "${s3_bucket_list[@]}"; do
+        echo "---------------------------------------------"
+        echo "Deleting bucket: $bucket"
+
+        echo "Removing all objects (including versions)"
+        aws s3 rm "s3://$bucket" --recursive >/dev/null 2>&1
+
+        echo "Removing versioned objects (if any)"
+        aws s3api delete-objects \
+            --bucket "$bucket" \
+            --delete "$(aws s3api list-object-versions --bucket "$bucket" \
+                --query='{Objects: Versions[].{Key:Key,VersionId:VersionId}}')" \
+            >/dev/null 2>&1 || true
+
+        echo "Removing delete markers (if any)"
+        aws s3api delete-objects \
+            --bucket "$bucket" \
+            --delete "$(aws s3api list-object-versions --bucket "$bucket" \
+                --query='{Objects: DeleteMarkers[].{Key:Key,VersionId:VersionId}}')" \
+            >/dev/null 2>&1 || true
+
+        echo "Deleting bucket"
+        aws s3api delete-bucket --bucket "$bucket" >/dev/null 2>&1 || true
+
+        echo "Following Bucket deleted successfully: $bucket"
+    done
+
+    echo "---------------------------------------------"
+    echo "All matching buckets deleted."
+
+    assume_role "bluemoon"
+}
 
 account_no="112393354275"
-delete_cdw_resources
+delete_stack
+delete_stackset
+delete_scp
+delete_lambda
+delete_iam_role
+delete_iam_policy
+delete_s3_bucket
