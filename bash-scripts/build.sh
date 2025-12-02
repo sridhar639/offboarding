@@ -6,7 +6,6 @@ else
     exit 1
 fi
 
-SEARCH="cdw"
 
 #Used to Assume both Roles from customer and Bluemoon
 assume_role() {
@@ -299,7 +298,7 @@ delete_s3_bucket() {
     assume_role "bluemoon"
 }
 
-account_no="112393354275"
+#start offboarding one by one
 delete_stack
 delete_stackset
 delete_scp
