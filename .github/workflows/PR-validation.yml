@@ -20,6 +20,8 @@ jobs:
 
       - name: Gather Variables and git details
         run: |
+          bash bash-scripts/get_variables.sh
+          bash bash-scripts/pre-validation.sh
           bash bash-scripts/list.sh
 
       - name: Removing CDW Resources
