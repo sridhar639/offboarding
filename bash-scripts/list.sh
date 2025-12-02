@@ -1,5 +1,13 @@
 #!/bin/bash
 
+#Getting requiring variables from get-variable generated file
+if [ -f /tmp/build_vars.sh ]; then
+    source /tmp/build_vars.sh
+else 
+    echo "Build variables not found! Did pre-build succeed?"
+    exit 1
+fi
+
 
 #Used to Assume both Roles from customer and Bluemoon
 assume_role() {
@@ -29,7 +37,7 @@ assume_role() {
 list() {
 SEARCH="cdw"
 
-assume_role "112393354275" "CDWOffboardingRole"
+assume_role "$account_no" "$cdw_offboarding_role"
 
 echo "============================= Lambda Functions ==================================================="
 lambda_list=($(aws lambda list-functions --query "Functions[].FunctionName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
@@ -69,8 +77,7 @@ assume_role "bluemoon"
 }
 
 
-
-account_no="112393354275"
+#List all the related resource
 list
 
 
