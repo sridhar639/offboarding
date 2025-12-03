@@ -260,7 +260,7 @@ delete_s3_bucket() {
 
     # Get buckets containing SEARCH
     s3_bucket_list=($(aws s3api list-buckets \
-        --query "Buckets[].Name"
+        --query "Buckets[].Name" \
          --output text | tr '\t' '\n' | grep -i "$SEARCH"))
 
     echo "Buckets to delete:"
