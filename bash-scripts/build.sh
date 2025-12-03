@@ -26,7 +26,6 @@ assume_role() {
     export AWS_SESSION_TOKEN=
     echo "Switched to Bluemoon account"
   fi
-  aws sts get-caller-identity --no-cli-pager --output table
 }
 
 
