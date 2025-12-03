@@ -205,6 +205,7 @@ delete_iam_role() {
         aws iam delete-role --role-name "$role"
 
         echo "Deleted: $role"
+    done
 
     assume_role "bluemoon"
 
