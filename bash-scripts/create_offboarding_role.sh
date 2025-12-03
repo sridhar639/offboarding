@@ -1,5 +1,16 @@
 #!/bin/bash
 
+
+#Getting requiring variables from get-variable generated file
+if [ -f /tmp/build_vars.sh ]; then
+    source /tmp/build_vars.sh
+else 
+    echo "Build variables not found! Did pre-build succeed?"
+    exit 1
+fi
+
+
+
 #Used to Assume both Roles from customer and Bluemoon
 assume_role() {
   local client_account_no=$1
@@ -24,10 +35,10 @@ assume_role() {
 
 
 create_offboarding_role() {
-    assume_role "112393354275" "CDWMasterOrgAdminRole"
+    assume_role "$account_no" "$cdw_master_org_role"
 
-    ROLE_NAME="CDWOffboardingRole"
-    MASTER_ACCOUNT="706839808421"
+    ROLE_NAME="$cdw_offboarding_role"
+    MASTER_ACCOUNT="$bluemoon_account"
     POLICY_ARN="arn:aws:iam::aws:policy/AdministratorAccess"
 
     # Trust policy as variable (HEREDOC must NOT be indented)
@@ -67,5 +78,5 @@ EOF
 }
 
 
-account_no="112393354275"
+
 create_offboarding_role

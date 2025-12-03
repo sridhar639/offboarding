@@ -31,7 +31,7 @@ assume_role() {
 
 
 delete_stack() {
-    assume_role "$account_no" "CDWOffboardingRole"
+    assume_role "$account_no" "$cdw_offboarding_role"
 
     stack_list=($(aws cloudformation list-stacks \
             --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE \
@@ -52,7 +52,7 @@ delete_stack() {
 }
 
 delete_stackset() {
-    assume_role "$account_no" "CDWOffboardingRole"
+    assume_role "$account_no" "$cdw_offboarding_role"
 
     stackset_list=($(aws cloudformation list-stack-sets --status ACTIVE \
         --query "Summaries[].StackSetName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
@@ -96,7 +96,7 @@ delete_stackset() {
 }
 
 delete_scp() {
-    assume_role "$account_no" "CDWOffboardingRole"
+    assume_role "$account_no" "$cdw_offboarding_role"
 
     SCP_SEARCH="cdw|support"
 
@@ -159,7 +159,7 @@ delete_scp() {
 }
 
 delete_lambda() {
-    assume_role "$account_no" "CDWOffboardingRole"
+    assume_role "$account_no" "$cdw_offboarding_role"
     lambda_list=($(aws lambda list-functions --query "Functions[].FunctionName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
     printf "%s\n" "${lambda_list[@]}"
 
@@ -171,11 +171,11 @@ delete_lambda() {
 }
 
 delete_iam_role() {
-    assume_role "$account_no" "CDWOffboardingRole"
+    assume_role "$account_no" "$cdw_offboarding_role"
 
     role_list=($(aws iam list-roles \
         --query "Roles[].RoleName" \
-        --output text | tr '\t' '\n' | grep -i "$SEARCH" | grep -iv "CDWOffboardingRole"))
+        --output text | tr '\t' '\n' | grep -i "$SEARCH" | grep -iv "$cdw_offboarding_role"))
     printf "%s\n" "${role_list[@]}"
 
     for role in "${role_list[@]}"; do
@@ -212,7 +212,7 @@ delete_iam_role() {
 }
 
 delete_iam_policy() {
-    assume_role "$account_no" "CDWOffboardingRole"
+    assume_role "$account_no" "$cdw_offboarding_role"
 
     iam_policy_list=($(aws iam list-policies --scope Local \
       --query "Policies[].PolicyName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
@@ -255,7 +255,7 @@ delete_iam_policy() {
 }
 
 delete_s3_bucket() {
-    assume_role "$account_no" "CDWOffboardingRole"
+    assume_role "$account_no" "$cdw_offboarding_role"
 
     # Get buckets containing SEARCH
     s3_bucket_list=($(aws s3api list-buckets \

@@ -1,4 +1,4 @@
-Customer:
+Ignore:
     Type: CommaDelimitedList
     Description: Enter List of CDW Resources that we can ignore Eg- "cdwdummyresource, cdw-dummy-resource-2"
     Value: 
