@@ -31,9 +31,7 @@ assume_role() {
     echo "Switched to $client_account_no ($role_name)"
   elif [ "bluemoon" == "${client_account_no,,}" ]; then
     echo "Trying to connect to Bluemoon Account "
-    export AWS_ACCESS_KEY_ID=
-    export AWS_SECRET_ACCESS_KEY=
-    export AWS_SESSION_TOKEN=
+    unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
     echo "Switched to Bluemoon account"
   else
     echo "Unable to switch Role"

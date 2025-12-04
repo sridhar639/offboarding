@@ -30,8 +30,6 @@ assume_role() {
   elif [ "bluemoon" == "${client_account_no,,}" ]; then
     echo "Trying to connect to Bluemoon Account "
     unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
-    # export AWS_SECRET_ACCESS_KEY=
-    # export AWS_SESSION_TOKEN=
     echo "Switched to Bluemoon account"
   else
     echo "Unable to switch Role"
@@ -81,8 +79,7 @@ scp_list=($(aws organizations list-policies --filter SERVICE_CONTROL_POLICY \
   --query "Policies[].Name" --output text | tr '\t' '\n' | grep -i -E "$SCP_SEARCH"))
 
 assume_role "$bluemoon"
-echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--Test bluemoon--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-aws s3 ls
+
 
 }
 
