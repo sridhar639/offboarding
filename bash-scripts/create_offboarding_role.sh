@@ -18,19 +18,27 @@ assume_role() {
 
   if [ $account_no == $client_account_no ]; then
     echo "Trying to connect to Account $client_account_no with role $role_name"
-    aws sts assume-role --role-arn arn:aws:iam::$client_account_no:role/$role_name --role-session-name codepipeline-session > cred.json       
+    if ! aws sts assume-role \
+     --role-arn arn:aws:iam::$client_account_no:role/$role_name \
+     --role-session-name codepipeline-session > cred.json; then    
+     echo "Error: Failed to assume role $role_name in $client_account_no"
+     exit 1
+    fi
+
     export AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' cred.json)       
     export AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' cred.json)       
     export AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' cred.json)  
     echo "Switched to $client_account_no ($role_name)"
-  else
+  elif [ "bluemoon" == "${client_account_no,,}" ]; then
     echo "Trying to connect to Bluemoon Account "
     export AWS_ACCESS_KEY_ID=
     export AWS_SECRET_ACCESS_KEY=
     export AWS_SESSION_TOKEN=
     echo "Switched to Bluemoon account"
+  else
+    echo "Unable to switch Role"
+    exit 1
   fi
-  aws sts get-caller-identity --no-cli-pager --output table
 }
 
 
@@ -74,7 +82,7 @@ EOF
 
     echo "Role $ROLE_NAME created successfully with Admin access."
 
-    assume_role "bluemoon"
+    assume_role "$bluemoon"
 }
 
 

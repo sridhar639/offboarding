@@ -18,17 +18,22 @@ assume_role() {
      --role-arn arn:aws:iam::$client_account_no:role/$role_name \
      --role-session-name codepipeline-session > cred.json; then    
      echo "Error: Failed to assume role $role_name in $client_account_no"
-     return 1
+     exit 1
     fi
 
     export AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' cred.json)       
     export AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' cred.json)       
     export AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' cred.json)  
     echo "Switched to $client_account_no ($role_name)"
-  else
+  elif [ "bluemoon" == "${client_account_no,,}" ]; then
     echo "Trying to connect to Bluemoon Account "
-    unset $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY $AWS_SESSION_TOKEN
+    export AWS_ACCESS_KEY_ID=
+    export AWS_SECRET_ACCESS_KEY=
+    export AWS_SESSION_TOKEN=
     echo "Switched to Bluemoon account"
+  else
+    echo "Unable to switch Role"
+    exit 1
   fi
 }
 
@@ -51,7 +56,7 @@ delete_stack() {
         echo "Stack $stack deleted successfully."
     done
 
-    assume_role "bluemoon"
+    assume_role "$bluemoon"
 }
 
 delete_stackset() {
@@ -95,7 +100,7 @@ delete_stackset() {
         aws cloudformation delete-stack-set --stack-set-name "$ss"
     done
 
-    assume_role "bluemoon"
+    assume_role "$bluemoon"
 }
 
 delete_scp() {
@@ -158,7 +163,7 @@ delete_scp() {
     done
 
 
-    assume_role "bluemoon"
+    assume_role "$bluemoon"
 }
 
 delete_lambda() {
@@ -170,7 +175,7 @@ delete_lambda() {
         echo "Deleting Lambda: $lambda"
         aws lambda delete-function --function-name "$lambda"
     done
-    assume_role "bluemoon"
+    assume_role "$bluemoon"
 }
 
 delete_iam_role() {
@@ -210,7 +215,7 @@ delete_iam_role() {
         echo "Deleted: $role"
     done
 
-    assume_role "bluemoon"
+    assume_role "$bluemoon"
 
 
 }
@@ -255,7 +260,7 @@ delete_iam_policy() {
         echo "Deleted $policy_name"
     done
 
-    assume_role "bluemoon"
+    assume_role "$bluemoon"
 }
 
 delete_s3_bucket() {
@@ -299,7 +304,7 @@ delete_s3_bucket() {
     echo "---------------------------------------------"
     echo "All matching buckets deleted."
 
-    assume_role "bluemoon"
+    assume_role "$bluemoon"
 }
 
 #start offboarding one by one
