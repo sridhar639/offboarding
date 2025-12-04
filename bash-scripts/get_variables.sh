@@ -26,6 +26,7 @@ export cdw_offboarding_role="$cdw_offboarding_role"
 export bluemoon_account="$bluemoon_account"
 export SEARCH="$SEARCH"
 export ignore_list="$ignore_list"
+export bluemoon="$bluemoon"
 EOL
 
 echo -e "\nWrote Everything to /tmp/build_vars.sh"
