@@ -10,7 +10,6 @@ else
 fi
 
 
-
 #Used to Assume both Roles from customer and Bluemoon
 assume_role() {
   local client_account_no=$1
