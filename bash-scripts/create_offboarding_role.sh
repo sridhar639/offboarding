@@ -37,7 +37,7 @@ assume_role() {
     exit 1
   fi
 }
-
+ 
 
 create_offboarding_role() {
     assume_role "$account_no" "$cdw_master_org_role"
