@@ -92,6 +92,8 @@ EOF
         sleep 2
     done
 
+    assume_role "$bluemoon"
+    
     echo "Waiting for role to become assumable..."
 
     until aws sts assume-role \
@@ -105,7 +107,7 @@ EOF
     echo "Role is now assumable!"
     
 
-    assume_role "$bluemoon"
+    
 }
 
 
