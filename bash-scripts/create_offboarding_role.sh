@@ -48,19 +48,19 @@ create_offboarding_role() {
 
     # Trust policy as variable (HEREDOC must NOT be indented)
     TRUST_POLICY=$(cat <<EOF
-          {
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Sid": "",
-                "Effect": "Allow",
-                "Principal": {
-                  "AWS": "arn:aws:iam::${MASTER_ACCOUNT}:root"
-                },
-                "Action": "sts:AssumeRole"
-              }
-            ]
-          }
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::${MASTER_ACCOUNT}:root"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
 EOF
 )
 
@@ -70,6 +70,7 @@ EOF
         --role-name "$ROLE_NAME" \
         --assume-role-policy-document "$TRUST_POLICY" \
         --path "/" >/dev/null
+
     echo "Waiting for IAM role $ROLE_NAME to become available..."
     until aws iam get-role --role-name "$ROLE_NAME" >/dev/null 2>&1; do
         sleep 2
