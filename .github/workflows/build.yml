@@ -1,0 +1,27 @@
+name: Build and Deploy
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+      - test
+
+jobs:
+  sri-test-build:
+    if: github.event.pull_request.merged == true
+    runs-on: codebuild-sri-offboarding-test-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pip install -r requirements/requirements.txt
+
+      - name: Removing CDW Resources
+        run: |
+          bash bash-scripts/build.sh
+
+      - name: Veryfying all the CDW Resource
+        run: |
+          bash bash-scripts/list.sh

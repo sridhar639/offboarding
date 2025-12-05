@@ -1,0 +1,39 @@
+name: Pre-validation
+
+on:
+  push:
+    branches:
+      - main
+      - test
+
+jobs:
+  Sri-test-list:
+    runs-on: codebuild-sri-offboarding-test-${{ github.run_id }}-${{ github.run_attempt }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements/requirements.txt
+
+      - name: Gather Variables and git details
+        run: |
+          bash bash-scripts/get_variables.sh
+          
+      - name: Creating offboarding Role
+        run: |
+          bash bash-scripts/create_offboarding_role.sh
+
+      - name: Listing all the CDW Resource that will be deleting
+        run: |
+          bash bash-scripts/list.sh
+
+      - name: Pre-Validation of Given Data
+        run: |
+          bash bash-scripts/pre-validation.sh
+
+
+        
+

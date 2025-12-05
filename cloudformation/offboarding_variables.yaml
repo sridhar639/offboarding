@@ -1,0 +1,13 @@
+AccountNo:
+    Type: Int
+    Description: Account number for the Management Account to be onboarded 
+    Value: "112393354275"
+# Customer:
+#     Type: String
+#     Description: Name of customer to be Onboarded
+#     Value: "CDW Test Onboarding"
+# CustomerAbbreviation:
+#     Type: String
+#     Description: Short name for the customer 
+#     Value: tcp
+
