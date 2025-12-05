@@ -25,3 +25,7 @@ jobs:
       - name: Removing CDW Resources
         run: |
           bash bash-scripts/build.sh
+
+      - name: Veryfying all the CDW Resource
+        run: |
+          bash bash-scripts/list.sh

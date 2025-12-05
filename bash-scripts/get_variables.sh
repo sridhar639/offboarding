@@ -13,6 +13,8 @@ bluemoon_account="706839808421"
 
 SEARCH="cdw"
 
+SCP_SEARCH="cdw|support"
+
 bluemoon="bluemoon"
 
 n_virginia_region="us-east-1"
@@ -27,6 +29,7 @@ export cdw_master_org_role="$cdw_master_org_role"
 export cdw_offboarding_role="$cdw_offboarding_role"
 export bluemoon_account="$bluemoon_account"
 export SEARCH="$SEARCH"
+export SCP_SEARCH="$SCP_SEARCH"
 export ignore_list="$ignore_list"
 export bluemoon="$bluemoon"
 export n_virginia_region="$n_virginia_region"

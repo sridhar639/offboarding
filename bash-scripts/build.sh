@@ -37,14 +37,16 @@ assume_role() {
 
 
 delete_stack() {
+    echo "================================== Deleting Stacks ========================================="
+
     assume_role "$account_no" "$cdw_offboarding_role"
 
     stack_list=($(aws cloudformation list-stacks \
             --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE \
-            --query "StackSummaries[].StackName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+            --query "StackSummaries[].StackName" --output text | tr '\t' '\n' | grep -i "$SEARCH" \
+            | grep -ivE "$ignore_list"))
     printf "%s\n" "${stack_list[@]}"
 
-    echo "================================== Deleting Stacks ========================================="
     if [ $stack_list ]; then
         for stack in "${stack_list[@]}"; do
             echo "Deleting stack: $stack"
@@ -63,13 +65,15 @@ delete_stack() {
 }
 
 delete_stackset() {
+    echo "================================== Deleting Stackset ========================================="
+
     assume_role "$account_no" "$cdw_offboarding_role"
 
     stackset_list=($(aws cloudformation list-stack-sets --status ACTIVE \
-        --query "Summaries[].StackSetName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+        --query "Summaries[].StackSetName" --output text | tr '\t' '\n' | grep -i "$SEARCH" \
+        | grep -ivE "$ignore_list"))
     printf "%s\n" "${stackset_list[@]}"
 
-    echo "================================== Deleting Stackset ========================================="
     if [ $stackset_list ]; then
         for ss in "${stackset_list[@]}"; do
             echo "Deleting StackSet: $ss"
@@ -111,20 +115,19 @@ delete_stackset() {
 }
 
 delete_scp() {
-    assume_role "$account_no" "$cdw_offboarding_role"
+    echo "================================ Deleting SCPs ======================================"
 
-    SCP_SEARCH="cdw|support"
+    assume_role "$account_no" "$cdw_offboarding_role"
 
     # Get list of SCP names matching search
     scp_list=($(aws organizations list-policies --filter SERVICE_CONTROL_POLICY \
       --query "Policies[].Name" --output text \
       | tr '\t' '\n' \
-      | grep -Ei "$SCP_SEARCH"))
+      | grep -Ei "$SCP_SEARCH" \
+      | grep -ivE "$ignore_list"))
 
     echo "Found SCPs:"
     printf "%s\n" "${scp_list[@]}"
-
-    echo "================= Deleting SCPs ==========================="
 
     if [ $scp_list ]; then
         for scp_name in "${scp_list[@]}"; do
@@ -176,8 +179,13 @@ delete_scp() {
 }
 
 delete_lambda() {
+    echo "====================================== Deleting Lambda ===================================="
+    
     assume_role "$account_no" "$cdw_offboarding_role"
-    lambda_list=($(aws lambda list-functions --query "Functions[].FunctionName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+    lambda_list=($(aws lambda list-functions --query "Functions[].FunctionName" --output text \
+    | tr '\t' '\n' \| grep -i "$SEARCH" \
+    | grep -ivE "$ignore_list"))
+
     printf "%s\n" "${lambda_list[@]}"
 
     if [ $lambda_list ]; then
@@ -192,13 +200,15 @@ delete_lambda() {
 }
 
 delete_iam_role() {
+    echo "======================================= Deleting IAM Role ======================================="
+
     assume_role "$account_no" "$cdw_offboarding_role"
 
     role_list=($(aws iam list-roles \
         --query "Roles[].RoleName" \
         --output text | tr '\t' '\n' | grep -i "$SEARCH" | grep -iv "$cdw_offboarding_role"))
     printf "%s\n" "${role_list[@]}"
-    echo "================= Deleting IAM Role ==========================="
+    
     if [ $role_list ]; then
         for role in "${role_list[@]}"; do
             #1. Delete inline policies
@@ -238,12 +248,15 @@ delete_iam_role() {
 }
 
 delete_iam_policy() {
+    echo "===================================== Deleting IAM Policy ============================================"
+
     assume_role "$account_no" "$cdw_offboarding_role"
 
     iam_policy_list=($(aws iam list-policies --scope Local \
-      --query "Policies[].PolicyName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+      --query "Policies[].PolicyName" --output text | tr '\t' '\n' | grep -i "$SEARCH" \
+      | grep -ivE "$ignore_list"))
     printf "%s\n" "${iam_policy_list[@]}"
-    echo "================= Deleting IAM Policy ==========================="
+    
     if [ $iam_policy_list ]; then
         for policy_name in "${iam_policy_list[@]}"; do
             echo "Processing: $policy_name"
@@ -284,16 +297,18 @@ delete_iam_policy() {
 }
 
 delete_s3_bucket() {
+    echo "========================================= Deleting S3 Bucket =========================================="
     assume_role "$account_no" "$cdw_offboarding_role"
 
     # Get buckets containing SEARCH
     s3_bucket_list=($(aws s3api list-buckets \
         --query "Buckets[].Name" \
-         --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+        --output text | tr '\t' '\n' | grep -i "$SEARCH" \
+        | grep -ivE "$ignore_list"))
 
     echo "Buckets to delete:"
     printf "%s\n" "${s3_bucket_list[@]}"
-    echo "================= Deleting S3 Bucket ==========================="
+    
     if [ $s3_bucket_list ]; then
         for bucket in "${s3_bucket_list[@]}"; do
             echo "---------------------------------------------"
@@ -333,14 +348,16 @@ delete_s3_bucket() {
 }
 
 delete_cur_report() {
+    echo "========================================= Deleting CUR Report =========================================="
+
     assume_role "$account_no" "$cdw_offboarding_role"
 
-    
     # Get report names that match search
     report_list=($(aws cur describe-report-definitions \
         --region $n_virginia_region \
         --query "ReportDefinitions[].ReportName" \
-        --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+        --output text | tr '\t' '\n' | grep -i "$SEARCH" \
+        | grep -ivE "$ignore_list"))
 
     echo "Reports found:"
     printf "%s\n" "${report_list[@]}"
