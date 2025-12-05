@@ -67,10 +67,5 @@ export ignore_iam_policy="$ignore_iam_policy"
 export ignore_iam_role="$ignore_iam_role"
 export ignore_scp="$ignore_scp"
 export ignore_cur="$ignore_cur"
-
 EOL
 
-echo -e "\nWrote Everything to /tmp/build_vars.sh"
-echo "================ File Contents ================"
-cat /tmp/build_vars.sh
-echo "==============================================="
