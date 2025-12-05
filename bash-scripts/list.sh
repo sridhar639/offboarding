@@ -41,7 +41,6 @@ assume_role() {
 
 
 list() {
-SEARCH="cdw"
 
 assume_role "$account_no" "$cdw_offboarding_role"
 
