@@ -39,8 +39,6 @@ bluemoon_account="706839808421"
 
 SEARCH="cdw"
 
-SCP_SEARCH="cdw|support"
-
 bluemoon="bluemoon"
 
 n_virginia_region="us-east-1"

@@ -22,10 +22,6 @@ jobs:
       - name: Gather Variables and git details
         run: |
           bash bash-scripts/get_variables.sh
-          
-      - name: Creating offboarding Role
-        run: |
-          bash bash-scripts/create_offboarding_role.sh
 
       - name: Listing all the CDW Resource that will be deleting
         run: |

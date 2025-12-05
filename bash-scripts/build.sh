@@ -36,10 +36,21 @@ assume_role() {
 }
 
 
+get_caller_identity() {
+  caller_identity=$(aws sts get-caller-identity)
+
+  verify_account=$(echo "$caller_identity" | jq -r '.Account')
+  verify_role=$(echo "$caller_identity" | jq -r '.Arn' | awk -F '/' '{print $2}')
+  
+  echo "$verify_account $verify_role"
+}
+
+
+
 delete_stack() {
     echo "================================== Deleting Stacks ========================================="
 
-    assume_role "$account_no" "$cdw_offboarding_role"
+    
 
     stack_list=($(aws cloudformation list-stacks \
             --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE \
@@ -61,13 +72,13 @@ delete_stack() {
     fi
 
 
-    assume_role "$bluemoon"
+    
 }
 
 delete_stackset() {
     echo "================================== Deleting Stackset ========================================="
 
-    assume_role "$account_no" "$cdw_offboarding_role"
+    
 
     stackset_list=($(aws cloudformation list-stack-sets --status ACTIVE \
         --query "Summaries[].StackSetName" --output text | tr '\t' '\n' | grep -i "$SEARCH" \
@@ -111,13 +122,13 @@ delete_stackset() {
         echo "No StackSet Available with Name $SEARCH"
     fi
 
-    assume_role "$bluemoon"
+    
 }
 
 delete_scp() {
     echo "================================ Deleting SCPs ======================================"
 
-    assume_role "$account_no" "$cdw_offboarding_role"
+    
 
     # Get list of SCP names matching search
     scp_list=($(aws organizations list-policies --filter SERVICE_CONTROL_POLICY \
@@ -175,13 +186,13 @@ delete_scp() {
     else
         echo "No SCP Available with Name $SEARCH"
     fi
-    assume_role "$bluemoon"
+    
 }
 
 delete_lambda() {
     echo "====================================== Deleting Lambda ===================================="
     
-    assume_role "$account_no" "$cdw_offboarding_role"
+    
     lambda_list=($(aws lambda list-functions --query "Functions[].FunctionName" --output text \
     | tr '\t' '\n' | grep -i "$SEARCH" \
     | grep -ivE "$ignore_lambda"))
@@ -196,13 +207,13 @@ delete_lambda() {
     else
         echo "No Lambda Available with Name $SEARCH"
     fi
-    assume_role "$bluemoon"
+    
 }
 
 delete_iam_role() {
     echo "======================================= Deleting IAM Role ======================================="
 
-    assume_role "$account_no" "$cdw_offboarding_role"
+    
 
     role_list=($(aws iam list-roles \
         --query "Roles[].RoleName" \
@@ -243,7 +254,7 @@ delete_iam_role() {
         echo "No Role Available with Name $SEARCH"
     fi
 
-    assume_role "$bluemoon"
+    
 
 
 }
@@ -251,7 +262,7 @@ delete_iam_role() {
 delete_iam_policy() {
     echo "===================================== Deleting IAM Policy ============================================"
 
-    assume_role "$account_no" "$cdw_offboarding_role"
+    
 
     iam_policy_list=($(aws iam list-policies --scope Local \
       --query "Policies[].PolicyName" --output text | tr '\t' '\n' | grep -i "$SEARCH" \
@@ -294,12 +305,12 @@ delete_iam_policy() {
     else
         echo "No Policy Available with Name $SEARCH"
     fi
-    assume_role "$bluemoon"
+    
 }
 
 delete_s3_bucket() {
     echo "========================================= Deleting S3 Bucket =========================================="
-    assume_role "$account_no" "$cdw_offboarding_role"
+    
 
     # Get buckets containing SEARCH
     s3_bucket_list=($(aws s3api list-buckets \
@@ -345,13 +356,13 @@ delete_s3_bucket() {
         echo "No S3 Bucket Available with Name $SEARCH"
     fi
 
-    assume_role "$bluemoon"
+    
 }
 
 delete_cur_report() {
     echo "========================================= Deleting CUR Report =========================================="
 
-    assume_role "$account_no" "$cdw_offboarding_role"
+    
 
     # Get report names that match search
     report_list=($(aws cur describe-report-definitions \
@@ -375,15 +386,25 @@ delete_cur_report() {
         echo "No CUR Report Available with $SEARCH"
     fi
 
-    assume_role "$bluemoon"
+    
 }
 
 #start offboarding one by one
-delete_stack
-delete_stackset
-delete_scp
-delete_lambda
-delete_iam_role
-delete_iam_policy
-delete_s3_bucket
-delete_cur_report
+assume_role "$account_no" "$cdw_offboarding_role"
+read verify_account verify_role <<< "$(get_caller_identity)"
+
+if [ $account_no == $verify_account ]; then
+    echo "Successfully Logged into Customer Account: $verify_account using $verify_role"
+    delete_stack
+    delete_stackset
+    delete_scp
+    delete_lambda
+    delete_iam_role
+    delete_iam_policy
+    delete_s3_bucket
+    delete_cur_report
+    
+    assume_role "$bluemoon"
+    read verify_account verify_role <<< "$(get_caller_identity)"
+    echo "Successfully Logged into Bluemoon Account: $verify_account using $verify_role"
+fi

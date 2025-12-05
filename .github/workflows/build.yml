@@ -23,6 +23,10 @@ jobs:
           bash bash-scripts/get_variables.sh
           bash bash-scripts/list.sh
 
+      - name: Creating offboarding Role
+        run: |
+          bash bash-scripts/create_offboarding_role.sh
+          
       - name: Removing CDW Resources
         run: |
           bash bash-scripts/build.sh

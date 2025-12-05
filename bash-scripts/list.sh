@@ -40,9 +40,10 @@ assume_role() {
 
 
 
-list() {
 
-  assume_role "$account_no" "$cdw_offboarding_role"
+list() {
+  assume_role "$account_no" "$cdw_master_org_role"
+
 
   echo "============================= Lambda Functions ==================================================="
   lambda_list=($(aws lambda list-functions --query "Functions[].FunctionName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
@@ -86,6 +87,7 @@ list() {
 
 #List all the related resource
 list
+
 
 
 #Exporting all the values
