@@ -93,8 +93,8 @@ EOF
     done
 
     assume_role "$bluemoon"
-    
-    echo "Waiting for role to become assumable..."
+
+    echo "Waiting for role: $$cdw_offboarding_role to become assumable..."
 
     until aws sts assume-role \
         --role-arn "arn:aws:iam::$account_no:role/$cdw_offboarding_role" \
