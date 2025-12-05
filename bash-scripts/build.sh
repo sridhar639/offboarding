@@ -333,6 +333,9 @@ delete_s3_bucket() {
 }
 
 delete_cur_report() {
+    assume_role "$account_no" "$cdw_offboarding_role"
+
+    
     # Get report names that match search
     report_list=($(aws cur describe-report-definitions \
         --region $n_virginia_region \
@@ -353,6 +356,8 @@ delete_cur_report() {
     else
         echo "No CUR Report Available with $SEARCH"
     fi
+
+    assume_role "$bluemoon"
 }
 
 #start offboarding one by one
