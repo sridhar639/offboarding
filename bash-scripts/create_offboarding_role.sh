@@ -71,6 +71,12 @@ EOF
         --assume-role-policy-document "$TRUST_POLICY" \
         --path "/" >/dev/null
 
+    echo "Waiting for IAM role $ROLE_NAME to become available..."
+    until aws iam get-role --role-name "$ROLE_NAME" >/dev/null 2>&1; do
+        sleep 2
+    done
+    echo "Role is ready."
+
     echo "Attaching AdministratorAccess policy..."
 
     aws iam attach-role-policy \
@@ -78,9 +84,30 @@ EOF
         --policy-arn "$POLICY_ARN" >/dev/null
 
     echo "Role $ROLE_NAME created successfully with Admin access."
-    sleep 5
+
+    echo "Waiting for policy attachment to propagate..."
+    until aws iam list-attached-role-policies --role-name "$ROLE_NAME" \
+         --query "AttachedPolicies[?PolicyArn=='$POLICY_ARN']" \
+         --output text | grep -q "$POLICY_ARN"; do
+        sleep 2
+    done
 
     assume_role "$bluemoon"
+
+    echo "Waiting for role: $$cdw_offboarding_role to become assumable..."
+
+    until aws sts assume-role \
+        --role-arn "arn:aws:iam::$account_no:role/$cdw_offboarding_role" \
+        --role-session-name offboarding-session \
+        >/dev/null 2>&1
+    do
+        sleep 2
+    done
+
+    echo "Role is now assumable!"
+    
+
+    
 }
 
 
