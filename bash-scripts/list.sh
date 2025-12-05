@@ -73,9 +73,10 @@ list() {
   printf "%s\n" "${s3_bucket_list[@]}"
 
   echo "============================= SCP Policy ==================================================="
-  SCP_SEARCH="cdw\|support"
+
   scp_list=($(aws organizations list-policies --filter SERVICE_CONTROL_POLICY \
     --query "Policies[].Name" --output text | tr '\t' '\n' | grep -i -E "$SCP_SEARCH"))
+  printf "%s\n" "${scp_list[@]}"
 
   assume_role "$bluemoon"
 
@@ -88,7 +89,7 @@ list
 
 
 #Exporting all the values
-cat <<EOL2 >> /tmp/available_list.sh
+cat <<EOL >> /tmp/build_vars.sh
 export lambda_list=(${lambda_list[@]@Q})
 export stack_list=(${stack_list[@]@Q})
 export stackset_list=(${stackset_list[@]@Q})
@@ -96,7 +97,7 @@ export role_list=(${role_list[@]@Q})
 export iam_policy_list=(${iam_policy_list[@]@Q})
 export s3_bucket_list=(${s3_bucket_list[@]@Q})
 export scp_list=(${scp_list[@]@Q})
-EOL2
+EOL
 
 
 
