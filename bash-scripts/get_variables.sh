@@ -15,6 +15,8 @@ SEARCH="cdw"
 
 bluemoon="bluemoon"
 
+n_virginia_region="us-east-1"
+
 
 
 
@@ -27,6 +29,7 @@ export bluemoon_account="$bluemoon_account"
 export SEARCH="$SEARCH"
 export ignore_list="$ignore_list"
 export bluemoon="$bluemoon"
+export n_virginia_region="$n_virginia_region"
 EOL
 
 echo -e "\nWrote Everything to /tmp/build_vars.sh"

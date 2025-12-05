@@ -332,6 +332,29 @@ delete_s3_bucket() {
     assume_role "$bluemoon"
 }
 
+delete_cur_report() {
+    # Get report names that match search
+    report_list=($(aws cur describe-report-definitions \
+        --region $n_virginia_region \
+        --query "ReportDefinitions[].ReportName" \
+        --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+
+    echo "Reports found:"
+    printf "%s\n" "${report_list[@]}"
+    if [ $report_list ]; then
+        # Delete each matching report
+        for report in "${report_list[@]}"; do
+            echo "Deleting CUR report: $report"
+            aws cur delete-report-definition \
+                --region $REGION \
+                --report-name "$report"
+        done
+        echo "Deleted all CUR Report with $SEARCH"
+    else
+        echo "No CUR Report Available with $SEARCH"
+    fi
+}
+
 #start offboarding one by one
 delete_stack
 delete_stackset
@@ -340,3 +363,4 @@ delete_lambda
 delete_iam_role
 delete_iam_policy
 delete_s3_bucket
+delete_cur_report
