@@ -390,21 +390,26 @@ delete_cur_report() {
 }
 
 #start offboarding one by one
-assume_role "$account_no" "$cdw_offboarding_role"
-read verify_account verify_role <<< "$(get_caller_identity)"
-
-if [ $account_no == $verify_account ]; then
-    echo "Successfully Logged into Customer Account: $verify_account using $verify_role"
-    delete_stack
-    delete_stackset
-    delete_scp
-    delete_lambda
-    delete_iam_role
-    delete_iam_policy
-    delete_s3_bucket
-    delete_cur_report
-    
-    assume_role "$bluemoon"
+start_offboarding() {
+    assume_role "$account_no" "$cdw_offboarding_role"
     read verify_account verify_role <<< "$(get_caller_identity)"
-    echo "Successfully Logged into Bluemoon Account: $verify_account using $verify_role"
-fi
+
+    if [ $account_no == $verify_account ]; then
+        echo "Successfully Logged into Customer Account: $verify_account using $verify_role"
+        
+        delete_stack
+        delete_stackset
+        delete_scp
+        delete_lambda
+        delete_iam_role
+        delete_iam_policy
+        delete_s3_bucket
+        delete_cur_report
+
+        assume_role "$bluemoon"
+        read verify_account verify_role <<< "$(get_caller_identity)"
+        echo "Successfully Logged into Bluemoon Account: $verify_account using $verify_role"
+    fi
+}
+
+start_offboarding
