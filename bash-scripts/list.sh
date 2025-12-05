@@ -42,44 +42,44 @@ assume_role() {
 
 list() {
 
-assume_role "$account_no" "$cdw_offboarding_role"
-
-echo "============================= Lambda Functions ==================================================="
-lambda_list=($(aws lambda list-functions --query "Functions[].FunctionName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
-printf "%s\n" "${lambda_list[@]}"
-
-echo "============================= CloudFormation Stacks ==================================================="
-stack_list=($(aws cloudformation list-stacks \
-  --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE \
-  --query "StackSummaries[].StackName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
-printf "%s\n" "${stack_list[@]}"
-
-echo "============================= CloudFormation StackSets ==================================================="
-stackset_list=($(aws cloudformation list-stack-sets --status ACTIVE \
-  --query "Summaries[].StackSetName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
-printf "%s\n" "${stackset_list[@]}"
-
-echo "============================= IAM Roles ==================================================="
-role_list=($(aws iam list-roles --query "Roles[].RoleName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
-printf "%s\n" "${role_list[@]}"
-
-echo "============================= IAM Policies ==================================================="
-iam_policy_list=($(aws iam list-policies --scope Local \
-  --query "Policies[].PolicyName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
-printf "%s\n" "${iam_policy_list[@]}"
-
-echo "============================= S3 Buckets ==================================================="
-s3_bucket_list=($(aws s3api list-buckets --query "Buckets[].Name" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
-printf "%s\n" "${s3_bucket_list[@]}"
-
-echo "============================= SCP Policy ==================================================="
-SCP_SEARCH="cdw\|support"
-scp_list=($(aws organizations list-policies --filter SERVICE_CONTROL_POLICY \
-  --query "Policies[].Name" --output text | tr '\t' '\n' | grep -i -E "$SCP_SEARCH"))
-
-assume_role "$bluemoon"
-
-
+  assume_role "$account_no" "$cdw_offboarding_role"
+  
+  echo "============================= Lambda Functions ==================================================="
+  lambda_list=($(aws lambda list-functions --query "Functions[].FunctionName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+  printf "%s\n" "${lambda_list[@]}"
+  
+  echo "============================= CloudFormation Stacks ==================================================="
+  stack_list=($(aws cloudformation list-stacks \
+    --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE \
+    --query "StackSummaries[].StackName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+  printf "%s\n" "${stack_list[@]}"
+  
+  echo "============================= CloudFormation StackSets ==================================================="
+  stackset_list=($(aws cloudformation list-stack-sets --status ACTIVE \
+    --query "Summaries[].StackSetName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+  printf "%s\n" "${stackset_list[@]}"
+  
+  echo "============================= IAM Roles ==================================================="
+  role_list=($(aws iam list-roles --query "Roles[].RoleName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+  printf "%s\n" "${role_list[@]}"
+  
+  echo "============================= IAM Policies ==================================================="
+  iam_policy_list=($(aws iam list-policies --scope Local \
+    --query "Policies[].PolicyName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+  printf "%s\n" "${iam_policy_list[@]}"
+  
+  echo "============================= S3 Buckets ==================================================="
+  s3_bucket_list=($(aws s3api list-buckets --query "Buckets[].Name" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+  printf "%s\n" "${s3_bucket_list[@]}"
+  
+  echo "============================= SCP Policy ==================================================="
+  SCP_SEARCH="cdw\|support"
+  scp_list=($(aws organizations list-policies --filter SERVICE_CONTROL_POLICY \
+    --query "Policies[].Name" --output text | tr '\t' '\n' | grep -i -E "$SCP_SEARCH"))
+  
+  assume_role "$bluemoon"
+  
+  
 }
 
 
