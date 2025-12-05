@@ -30,3 +30,4 @@ jobs:
       - name: Veryfying all the CDW Resource
         run: |
           bash bash-scripts/list.sh
+          bash bash-scripts/display_availables.sh

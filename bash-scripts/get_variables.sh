@@ -49,7 +49,7 @@ n_virginia_region="us-east-1"
 
 
 #Exporting all the values
-cat <<EOL >> /tmp/build_vars.sh
+cat <<EOL1 >> /tmp/build_vars.sh
 export account_no="$account_no"
 export cdw_master_org_role="$cdw_master_org_role"
 export cdw_offboarding_role="$cdw_offboarding_role"
@@ -67,10 +67,5 @@ export ignore_iam_policy="$ignore_iam_policy"
 export ignore_iam_role="$ignore_iam_role"
 export ignore_scp="$ignore_scp"
 export ignore_cur="$ignore_cur"
+EOL1
 
-EOL
-
-echo -e "\nWrote Everything to /tmp/build_vars.sh"
-echo "================ File Contents ================"
-cat /tmp/build_vars.sh
-echo "==============================================="
