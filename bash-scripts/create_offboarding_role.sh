@@ -48,19 +48,19 @@ create_offboarding_role() {
 
     # Trust policy as variable (HEREDOC must NOT be indented)
     TRUST_POLICY=$(cat <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "",
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::${MASTER_ACCOUNT}:root"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
+          {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "",
+                "Effect": "Allow",
+                "Principal": {
+                  "AWS": "arn:aws:iam::${MASTER_ACCOUNT}:root"
+                },
+                "Action": "sts:AssumeRole"
+              }
+            ]
+          }
 EOF
 )
 
@@ -70,6 +70,11 @@ EOF
         --role-name "$ROLE_NAME" \
         --assume-role-policy-document "$TRUST_POLICY" \
         --path "/" >/dev/null
+    echo "Waiting for IAM role $ROLE_NAME to become available..."
+    until aws iam get-role --role-name "$ROLE_NAME" >/dev/null 2>&1; do
+        sleep 2
+    done
+    echo "Role is ready."
 
     echo "Attaching AdministratorAccess policy..."
 
@@ -78,7 +83,26 @@ EOF
         --policy-arn "$POLICY_ARN" >/dev/null
 
     echo "Role $ROLE_NAME created successfully with Admin access."
-    sleep 5
+
+    echo "Waiting for policy attachment to propagate..."
+    until aws iam list-attached-role-policies --role-name "$ROLE_NAME" \
+         --query "AttachedPolicies[?PolicyArn=='$POLICY_ARN']" \
+         --output text | grep -q "$POLICY_ARN"; do
+        sleep 2
+    done
+
+    echo "Waiting for role to become assumable..."
+
+    until aws sts assume-role \
+        --role-arn "arn:aws:iam::$account_no:role/$cdw_offboarding_role" \
+        --role-session-name offboarding-session \
+        >/dev/null 2>&1
+    do
+        sleep 2
+    done
+
+    echo "Role is now assumable!"
+    
 
     assume_role "$bluemoon"
 }

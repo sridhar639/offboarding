@@ -183,7 +183,7 @@ delete_lambda() {
     
     assume_role "$account_no" "$cdw_offboarding_role"
     lambda_list=($(aws lambda list-functions --query "Functions[].FunctionName" --output text \
-    | tr '\t' '\n' \| grep -i "$SEARCH" \
+    | tr '\t' '\n' | grep -i "$SEARCH" \
     | grep -ivE "$ignore_list"))
 
     printf "%s\n" "${lambda_list[@]}"
@@ -366,7 +366,7 @@ delete_cur_report() {
         for report in "${report_list[@]}"; do
             echo "Deleting CUR report: $report"
             aws cur delete-report-definition \
-                --region $REGION \
+                --region $n_virginia_region \
                 --report-name "$report"
         done
         echo "Deleted all CUR Report with $SEARCH"
