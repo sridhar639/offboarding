@@ -1,13 +1,14 @@
 name: Pre-validation
 
 on:
-  push:
+  pull_request:
+    types: [opened, synchronize, reopened]
     branches:
       - main
-      - test
+      - development
 
 jobs:
-  Sri-test-list:
+  dv-managed-svcs-aws-offboarding-pr-validation:
     runs-on: codebuild-sri-offboarding-test-${{ github.run_id }}-${{ github.run_attempt }}
 
     steps:

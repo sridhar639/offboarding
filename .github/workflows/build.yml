@@ -8,7 +8,7 @@ on:
       - test
 
 jobs:
-  sri-test-build:
+  dv-managed-svcs-aws-offboarding-build:
     if: github.event.pull_request.merged == true
     runs-on: codebuild-sri-offboarding-test-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
