@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SEARCH="cdw"
-ACCOUNT_LIST_BUCKET="test-offboarding"
+ACCOUNT_LIST_BUCKET="sri-test-offboarding"
 ACCOUNT_LIST_KEY="clean_accounts.csv"
 OUTPUT_BUCKET="test-offboarding"
 OUTPUT_KEY="resource-inventory/resources.csv"
