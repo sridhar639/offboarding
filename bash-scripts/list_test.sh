@@ -115,10 +115,11 @@ list() {
               append_csv "GLOBAL" "S3Bucket" "$name"
             done
           fi
+        done
         
 
-        done
-        assume_role "706839808421"
+    done
+    assume_role "706839808421"
 
   # Upload CSV to S3
   echo "Uploading CSV to S3: s3://$OUTPUT_BUCKET/$OUTPUT_KEY"
