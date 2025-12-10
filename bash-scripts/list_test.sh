@@ -19,6 +19,7 @@ aws s3 cp "s3://${ACCOUNT_LIST_BUCKET}/${ACCOUNT_LIST_KEY}" "$TEMP_ACCOUNTS"
 #############################################
 ### 2. Read account numbers (each line is one)
 #############################################
+dos2unix "$TEMP_ACCOUNTS" 2>/dev/null || sed -i 's/\r$//' "$TEMP_ACCOUNTS"
 mapfile -t account_numbers < "$TEMP_ACCOUNTS"
 echo "$account_numbers"
 # Write CSV Header
