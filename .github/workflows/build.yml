@@ -18,15 +18,15 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements/requirements.txt
 
-      - name: Gather Variables and git details
-        run: |
-          bash bash-scripts/get_variables.sh
-          bash bash-scripts/list.sh
+      # - name: Gather Variables and git details
+      #   run: |
+      #     bash bash-scripts/get_variables.sh
+      #     bash bash-scripts/list.sh
 
-      - name: Removing CDW Resources
-        run: |
-          bash bash-scripts/build.sh
+      # - name: Removing CDW Resources
+      #   run: |
+      #     bash bash-scripts/build.sh
 
-      - name: Veryfying all the CDW Resource
-        run: |
-          bash bash-scripts/list.sh
+      # - name: Veryfying all the CDW Resource
+      #   run: |
+      #     bash bash-scripts/list.sh

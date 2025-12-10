@@ -14,25 +14,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements/requirements.txt
 
-      - name: Gather Variables and git details
+      - name: Gather Variables and list
         run: |
-          bash bash-scripts/get_variables.sh
+          bash bash-scripts/list_test.sh
           
-      - name: Creating offboarding Role
-        run: |
-          bash bash-scripts/create_offboarding_role.sh
+      # - name: Creating offboarding Role
+      #   run: |
+      #     bash bash-scripts/create_offboarding_role.sh
 
-      - name: Listing all the CDW Resource that will be deleting
-        run: |
-          bash bash-scripts/list.sh
+      # - name: Listing all the CDW Resource that will be deleting
+      #   run: |
+      #     bash bash-scripts/list.sh
 
-      - name: Pre-Validation of Given Data
-        run: |
-          bash bash-scripts/pre-validation.sh
+      # - name: Pre-Validation of Given Data
+      #   run: |
+      #     bash bash-scripts/pre-validation.sh
 
 
         
