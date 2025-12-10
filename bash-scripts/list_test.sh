@@ -2,7 +2,7 @@
 
 SEARCH="cdw"
 ACCOUNT_LIST_BUCKET="test-offboarding"
-ACCOUNT_LIST_KEY="clean_account.csv"
+ACCOUNT_LIST_KEY="clean_accounts.csv"
 OUTPUT_BUCKET="test-offboarding"
 OUTPUT_KEY="resource-inventory/resources.csv"
 
@@ -126,7 +126,8 @@ list() {
   aws s3 cp "$TEMP_CSV" "s3://$OUTPUT_BUCKET/$OUTPUT_KEY"
 
   echo "Upload complete!"
-  assume_role "$bluemoon"
+  assume_role "706839808421"
 }
+
 
 list
