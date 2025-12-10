@@ -41,7 +41,7 @@ assume_role() {
     export AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' cred.json)
     export AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' cred.json)
 
-  elif [ "706839808421" == "${client_account_no,,}" ]; then
+  elif [ "706839808421" == "${client_account_no}" ]; then
     unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
   else
     exit 1
@@ -116,10 +116,10 @@ list() {
             done
           fi
         done
-        
+        assume_role "706839808421"
 
     done
-    assume_role "706839808421"
+    
 
   # Upload CSV to S3
   echo "Uploading CSV to S3: s3://$OUTPUT_BUCKET/$OUTPUT_KEY"
