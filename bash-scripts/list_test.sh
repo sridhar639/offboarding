@@ -28,7 +28,7 @@ assume_role() {
   local client_account_no=$1
   local role_name=$2
 
-  if [ $account_no == $client_account_no ]; then
+  if [ "$account_no" == "$client_account_no" ]; then
     echo "Trying to connect to Account $client_account_no with role $role_name"
 
     if ! aws sts assume-role \
@@ -123,12 +123,13 @@ list() {
     
 
   # Upload CSV to S3
+  assume_role "706839808421"
   echo "Test"
   echo "Uploading CSV to S3: s3://$OUTPUT_BUCKET/$OUTPUT_KEY"
   aws s3 cp "$TEMP_CSV" "s3://$OUTPUT_BUCKET/$OUTPUT_KEY"
 
   echo "Upload complete!"
-  assume_role "706839808421"
+  
 }
 
 
