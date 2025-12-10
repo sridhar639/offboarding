@@ -21,7 +21,9 @@ aws s3 cp "s3://${ACCOUNT_LIST_BUCKET}/${ACCOUNT_LIST_KEY}" "$TEMP_ACCOUNTS"
 #############################################
 dos2unix "$TEMP_ACCOUNTS" 2>/dev/null || sed -i 's/\r$//' "$TEMP_ACCOUNTS"
 mapfile -t account_numbers < "$TEMP_ACCOUNTS"
-echo "$account_numbers"
+# Print loaded accounts
+echo "Loaded accounts:"
+printf '%s\n' "${account_numbers[@]}"
 # Write CSV Header
 
 assume_role() {
