@@ -9,6 +9,7 @@ OUTPUT_KEY="resource-inventory/resources.csv"
 TEMP_ACCOUNTS=$(mktemp)
 TEMP_CSV=$(mktemp)
 aws sts get-caller-identity --output table
+aws s3 ls
 echo "Account,Region,ResourceType,ResourceName" > "$TEMP_CSV"
 
 #############################################
