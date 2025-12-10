@@ -8,6 +8,7 @@ OUTPUT_KEY="resource-inventory/resources.csv"
 
 TEMP_ACCOUNTS=$(mktemp)
 TEMP_CSV=$(mktemp)
+cdw_master_org_role="CDWMasterOrgAdminRole"
 
 
 echo "Account,Region,ResourceType,ResourceName" > "$TEMP_CSV"
