@@ -20,7 +20,7 @@ aws s3 cp "s3://${ACCOUNT_LIST_BUCKET}/${ACCOUNT_LIST_KEY}" "$TEMP_ACCOUNTS"
 ### 2. Read account numbers (each line is one)
 #############################################
 mapfile -t account_numbers < "$TEMP_ACCOUNTS"
-
+echo "$account_numbers"
 # Write CSV Header
 
 assume_role() {
