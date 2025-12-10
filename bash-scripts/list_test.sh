@@ -122,6 +122,7 @@ list() {
     
 
   # Upload CSV to S3
+  echo "Test"
   echo "Uploading CSV to S3: s3://$OUTPUT_BUCKET/$OUTPUT_KEY"
   aws s3 cp "$TEMP_CSV" "s3://$OUTPUT_BUCKET/$OUTPUT_KEY"
 
