@@ -1,8 +1,9 @@
 #!/bin/bash
 
 SEARCH="cdw"
+SCP_SEARCH="cdw|support"
 ACCOUNT_LIST_BUCKET="sri-test-offboarding"
-ACCOUNT_LIST_KEY="clean_accounts (4).csv"
+ACCOUNT_LIST_KEY="clean_accounts.csv"
 OUTPUT_BUCKET="sri-test-offboarding"
 OUTPUT_KEY="resource-inventory/resources.csv"
 
@@ -74,7 +75,7 @@ list() {
         done
 
         scp_list=($(aws organizations list-policies --filter SERVICE_CONTROL_POLICY \
-          --query "Policies[].Name" --output text | tr '\t' '\n' | grep -i -E "$SEARCH"))
+          --query "Policies[].Name" --output text | tr '\t' '\n' | grep -i -E "$SCP_SEARCH"))
         for name in "${scp_list[@]}"; do
           append_csv "GLOBAL" "SCP" "$name"
         done
