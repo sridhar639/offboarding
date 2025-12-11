@@ -66,6 +66,40 @@ list() {
         assume_role "$account_no" "$cdw_master_org_role"
         regions=$(aws ec2 describe-regions --query "Regions[].RegionName" --output text)
 
+        # StackSets
+        stackset_list=($(aws cloudformation list-stack-sets --status ACTIVE \
+          --query "Summaries[].StackSetName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+        for name in "${stackset_list[@]}"; do
+          append_csv "GLOBAL" "StackSet" "$name"
+        done
+
+        scp_list=($(aws organizations list-policies --filter SERVICE_CONTROL_POLICY \
+          --query "Policies[].Name" --output text | tr '\t' '\n' | grep -i -E "$SEARCH"))
+        for name in "${scp_list[@]}"; do
+          append_csv "GLOBAL" "SCP" "$name"
+        done
+
+        # IAM Roles
+        role_list=($(aws iam list-roles \
+          --query "Roles[].RoleName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+        for name in "${role_list[@]}"; do
+          append_csv "GLOBAL" "IAMRole" "$name"
+        done
+
+        # IAM Policies
+        iam_policy_list=($(aws iam list-policies --scope Local \
+          --query "Policies[].PolicyName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+        for name in "${iam_policy_list[@]}"; do
+          append_csv "GLOBAL" "IAMPolicy" "$name"
+        done
+
+        # S3 Buckets
+        s3_bucket_list=($(aws s3api list-buckets \
+          --query "Buckets[].Name" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
+        for name in "${s3_bucket_list[@]}"; do
+          append_csv "GLOBAL" "S3Bucket" "$name"
+        done
+
         for region in $regions; do
           echo "Scanning region: $region"
 
@@ -88,37 +122,7 @@ list() {
             append_csv "$region" "CloudFormationStack" "$name"
           done
 
-          # Only run global services once
-          if [ "$region" == "${regions%% *}" ]; then
-
-            # StackSets
-            stackset_list=($(aws cloudformation list-stack-sets --status ACTIVE \
-              --query "Summaries[].StackSetName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
-            for name in "${stackset_list[@]}"; do
-              append_csv "GLOBAL" "StackSet" "$name"
-            done
-
-            # IAM Roles
-            role_list=($(aws iam list-roles \
-              --query "Roles[].RoleName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
-            for name in "${role_list[@]}"; do
-              append_csv "GLOBAL" "IAMRole" "$name"
-            done
-
-            # IAM Policies
-            iam_policy_list=($(aws iam list-policies --scope Local \
-              --query "Policies[].PolicyName" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
-            for name in "${iam_policy_list[@]}"; do
-              append_csv "GLOBAL" "IAMPolicy" "$name"
-            done
-
-            # S3 Buckets
-            s3_bucket_list=($(aws s3api list-buckets \
-              --query "Buckets[].Name" --output text | tr '\t' '\n' | grep -i "$SEARCH"))
-            for name in "${s3_bucket_list[@]}"; do
-              append_csv "GLOBAL" "S3Bucket" "$name"
-            done
-          fi
+         
         done
         assume_role "706839808421"
 
