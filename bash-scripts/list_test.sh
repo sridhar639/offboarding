@@ -57,7 +57,7 @@ append_csv() {
   local type=$2
   local name=$3
 
-  echo "$account_no,$region,$type,$name" >> "$TEMP_CSV"
+  echo "'$account_no',$region,$type,$name" >> "$TEMP_CSV"
 }
 
 list() {
