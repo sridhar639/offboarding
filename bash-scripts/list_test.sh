@@ -25,10 +25,7 @@ dos2unix "$TEMP_ACCOUNTS" 2>/dev/null || sed -i 's/\r$//' "$TEMP_ACCOUNTS"
 mapfile -t account_numbers < "$TEMP_ACCOUNTS"
 
 account_numbers=("${account_numbers[@]//\'/}")
-# Print loaded accounts
-echo "Loaded accounts:"
-printf '%s\n' "${account_numbers[@]}"
-# Write CSV Header
+
 
 assume_role() {
   local client_account_no=$1
