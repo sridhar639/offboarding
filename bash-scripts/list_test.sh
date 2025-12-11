@@ -2,7 +2,7 @@
 
 SEARCH="cdw"
 ACCOUNT_LIST_BUCKET="sri-test-offboarding"
-ACCOUNT_LIST_KEY="clean_accounts.csv"
+ACCOUNT_LIST_KEY="clean_accounts (4).csv"
 OUTPUT_BUCKET="sri-test-offboarding"
 OUTPUT_KEY="resource-inventory/resources.csv"
 
