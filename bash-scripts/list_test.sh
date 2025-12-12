@@ -69,11 +69,12 @@ list() {
             --region us-east-1 \
             --query "ReportDefinitions[].ReportName" \
             --output text | tr '\t' '\n'))
-        
+
         # Loop through each report name
         for name in "${cur_list[@]}"; do
             append_csv "GLOBAL" "CostAndUsageReport" "$name"
         done
+        assume_role "706839808421"
         # regions=$(aws ec2 describe-regions --query "Regions[].RegionName" --output text)
 
         # # StackSets
@@ -139,7 +140,7 @@ list() {
     done
     
 
-  Upload CSV to S3
+  
   assume_role "706839808421"
   echo "Test"
   echo "Uploading CSV to S3: s3://$OUTPUT_BUCKET/$OUTPUT_KEY"
